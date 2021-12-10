@@ -15,4 +15,7 @@ public class Scooter extends Vehicle{
 	public double getSpeed() {
 		return (this.cylinder/50)+30;
 	}
+	public double getUseCost() {
+		return this.usecost;
+	}
 }

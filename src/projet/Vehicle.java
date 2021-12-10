@@ -16,5 +16,10 @@ double co2;
  public String getName() {
 	 return this.name;
  }
+ public double getUseCost() {
+	 System.out.println(this.name + this.usecost);
+	 return this.usecost;
+	
+ }
  public abstract double getSpeed();
 }

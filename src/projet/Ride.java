@@ -17,8 +17,8 @@ public class Ride {
 		this.worker = worker;
 		this.vehicle = vehicle;
 		this.route = route;
-		this.price = this.worker.salary + 0;
-		this.co2 = 0;//(vehicle.co2*route.totalDistance());
+		this.price = this.worker.salary + vehicle.getUseCost();
+		this.co2 = (vehicle.co2*route.totalDistance());
 		if(worker.getPayload()>vehicle.getPayload()){
 			this.payload = worker.getPayload();
 		}
@@ -27,26 +27,26 @@ public class Ride {
 		}
 		this.speed = (worker.getSpeed() + vehicle.getSpeed());
 	}
-	public boolean isPossible() {/*
-		System.out.println("COURSE DE  "+this.getWorkerName()+" SUR "+this.getVehicleName());
-		System.out.println("Charge utile course : "+this.getPayload());
-		System.out.println("Poids course : "+this.getWeight());
-		System.out.println("Vitesse livreur : "+this.worker.getSpeed());
-		System.out.println("Vitesse véhicule : "+this.vehicle.getSpeed());
-		System.out.println("Vitesse course : "+this.getSpeed());
-		System.out.println("Temps estimé : "+this.getDistance()/this.getSpeed());*/
+	public boolean isPossible() {
+		//System.out.println("COURSE DE  "+this.getWorkerName()+" SUR "+this.getVehicleName());
+		//System.out.println("Charge utile course : "+this.getPayload());
+		//System.out.println("Poids course : "+this.getWeight());
+		//System.out.println("Vitesse livreur : "+this.worker.getSpeed());
+		//System.out.println("Vitesse véhicule : "+this.vehicle.getSpeed());
+		//System.out.println("Vitesse course : "+this.getSpeed());
+		//System.out.println("Temps estimé : "+this.getDistance()/this.getSpeed());*/
 		boolean lessThan1Hour = this.getDistance()/(this.speed)<1;
 		if(lessThan1Hour) {
 			if(this.payload >= this.weight) {
 				return true;
 			}
 			else {
-				System.out.println("Course impossible pour "+this.getWorkerName()+" sur "+ this.getVehicleName()+": trop lourd ("+this.payload+" > "+this.weight+")");
+				//System.out.println("Course impossible pour "+this.getWorkerName()+" sur "+ this.getVehicleName()+": trop lourd ("+this.weight+" > "+this.payload+")");
 				return false;
 			}
 		}
 		else {
-			System.out.println("Course de "+this.getWorkerName()+" sur "+this.getVehicleName()+" impossible : trop long");
+			//System.out.println("Course de "+this.getWorkerName()+" sur "+this.getVehicleName()+" impossible : trop long");
 			return false;
 		}
 		//return (this.payload >= this.weight && lessThan1Hour);
@@ -72,8 +72,13 @@ public class Ride {
 	public String getVehicleName() {
 		return this.vehicle.getName();
 	}
-	
-	public boolean isWorseThan() {
-		return true;
+	public double getCo2() {
+		return this.co2;
+	}
+	public double getPrice() {
+		return this.price;
+	}
+	public boolean isWorseThan(Ride ride2) {
+		return (this.co2 > ride2.getCo2() && this.price == ride2.getPrice()) || (this.co2 == ride2.getCo2() && this.price > ride2.getPrice()) || (this.co2 > ride2.getCo2() && this.price > ride2.getPrice());
 	}
 }

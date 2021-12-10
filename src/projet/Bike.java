@@ -9,4 +9,7 @@ public Bike(String name, int price){
 	public double getSpeed(){
 		return 0;
 	}
+	public double getUseCost() {
+		return this.usecost;
+	}
 }
