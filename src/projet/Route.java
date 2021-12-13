@@ -1,11 +1,11 @@
 package projet;
-import java.util.*;
-import java.lang.*;
+import java.util.ArrayList;
 public class Route {
-	private ArrayList<GPSPoint> route;
+	private ArrayList<GPSPoint> route = new ArrayList<GPSPoint>();
 	
-	public Route(ArrayList<GPSPoint> route) {
-		this.route = route;
+	public Route(GPSPoint destination) {
+		this.route.add(new GPSPoint(640,360));
+		this.route.add(destination);
 	}
 	
 	public double totalDistance() {
@@ -15,5 +15,7 @@ public class Route {
 		}
 		return d;
 	}
-	
+	public GPSPoint destination() {
+		return this.route.get(1);
+	}
 }

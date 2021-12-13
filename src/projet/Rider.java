@@ -2,7 +2,7 @@ package projet;
 
 public class Rider extends Worker {
 
-	public Rider(String name, double salary) {
+	public Rider(String name, double weight, double salary) {
 		super(name, 0, salary);
 	}
 

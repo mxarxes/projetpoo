@@ -2,11 +2,13 @@ package projet;
 
 public abstract class Vehicle {
 String name;
-int price;
+double price;
 double usecost;
 double payload;
 double co2;
+GPSPoint position;
  public Vehicle(String name, int price) {
+	 this.position = new GPSPoint(640,360);
 	 this.name = name;
 	 this.price = price;
  }
@@ -17,9 +19,14 @@ double co2;
 	 return this.name;
  }
  public double getUseCost() {
-	 System.out.println(this.name + this.usecost);
 	 return this.usecost;
 	
+ }
+ public double getCo2() {
+	 return this.co2;
+ }
+ public boolean isAvailable() {
+	 return this.position.getX() == 640 && this.position.getY() == 360;
  }
  public abstract double getSpeed();
 }

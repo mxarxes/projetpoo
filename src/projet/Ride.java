@@ -1,24 +1,26 @@
 package projet;
-import java.util.*;
 
-public class Ride {
+public class Ride{
 	private double weight;
 	private Worker worker;
 	private Vehicle vehicle;
 	private Route route;
 	private double price;
 	private double co2;
-	private boolean isPossible;
 	private double payload;
 	private double speed;
-	
+	private boolean isOptimal; //is less expensive and less polluting, less expensive and as polluting as, or as expensive and less polluting than any other ride in a set rideList.
+	private boolean isGreen; //is less polluting than any other in a rideList.
+
 	public Ride(double weight, Worker worker, Vehicle vehicle, Route route) {
+		this.isOptimal = true;
+		this.isGreen = true;
 		this.weight = weight;
 		this.worker = worker;
 		this.vehicle = vehicle;
 		this.route = route;
-		this.price = this.worker.salary + vehicle.getUseCost();
-		this.co2 = (vehicle.co2*route.totalDistance());
+		this.price = this.worker.getSalary() + vehicle.getUseCost();
+		this.co2 = (vehicle.getCo2()*route.totalDistance());
 		if(worker.getPayload()>vehicle.getPayload()){
 			this.payload = worker.getPayload();
 		}
@@ -28,49 +30,37 @@ public class Ride {
 		this.speed = (worker.getSpeed() + vehicle.getSpeed());
 	}
 	public boolean isPossible() {
-		//System.out.println("COURSE DE  "+this.getWorkerName()+" SUR "+this.getVehicleName());
-		//System.out.println("Charge utile course : "+this.getPayload());
-		//System.out.println("Poids course : "+this.getWeight());
-		//System.out.println("Vitesse livreur : "+this.worker.getSpeed());
-		//System.out.println("Vitesse véhicule : "+this.vehicle.getSpeed());
-		//System.out.println("Vitesse course : "+this.getSpeed());
-		//System.out.println("Temps estimé : "+this.getDistance()/this.getSpeed());*/
 		boolean lessThan1Hour = this.getDistance()/(this.speed)<1;
 		if(lessThan1Hour) {
 			if(this.payload >= this.weight) {
 				return true;
 			}
 			else {
-				//System.out.println("Course impossible pour "+this.getWorkerName()+" sur "+ this.getVehicleName()+": trop lourd ("+this.weight+" > "+this.payload+")");
 				return false;
 			}
 		}
 		else {
-			//System.out.println("Course de "+this.getWorkerName()+" sur "+this.getVehicleName()+" impossible : trop long");
+
 			return false;
 		}
-		//return (this.payload >= this.weight && lessThan1Hour);
 	}
 	public double getSpeed() {
-		// TODO Auto-generated method stub
 		return this.speed;
 	}
 	public double getWeight() {
-		// TODO Auto-generated method stub
 		return this.weight;
 	}
 	public double getPayload() {
-		// TODO Auto-generated method stub
 		return this.payload;
 	}
 	public double getDistance() {
 		return this.route.totalDistance();
 	}
-	public String getWorkerName() {
-		return this.worker.getName();
+	public Worker getWorker() {
+		return this.worker;
 	}
-	public String getVehicleName() {
-		return this.vehicle.getName();
+	public Vehicle getVehicle() {
+		return this.vehicle;
 	}
 	public double getCo2() {
 		return this.co2;
@@ -78,7 +68,34 @@ public class Ride {
 	public double getPrice() {
 		return this.price;
 	}
+	public void setOptimal(boolean o) {
+		this.isOptimal = o;
+	}
+	public boolean getOptimal() {
+		return this.isOptimal;
+	}
+	public void setGreen(boolean g) {
+		this.isGreen = g;
+	}
+	public boolean getGreen() {
+		return this.isGreen;
+	}
 	public boolean isWorseThan(Ride ride2) {
 		return (this.co2 > ride2.getCo2() && this.price == ride2.getPrice()) || (this.co2 == ride2.getCo2() && this.price > ride2.getPrice()) || (this.co2 > ride2.getCo2() && this.price > ride2.getPrice());
+	}
+	public boolean isDifferentThan(Ride ride2) {
+		return this.getVehicle().getName() != ride2.getVehicle().getName() || this.getWorker().getName() != ride2.getWorker().getName();
+	}
+	public boolean isMorePollutingThan(Ride r2) {
+		return this.getCo2()>r2.getCo2();
+	}
+	public void step() {
+		this.worker.goTowards(this.route.destination());
+	}
+	public void stepHome() {
+		this.worker.goTowards(new GPSPoint(640,360));
+	}
+	public void display() {
+		System.out.println(this.getWorker().getName() + " sur " + this.getVehicle().getName());
 	}
 }

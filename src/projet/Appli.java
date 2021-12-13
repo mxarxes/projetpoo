@@ -2,22 +2,22 @@ package projet;
 
 import java.util.ArrayList;
 
+import javax.swing.SwingUtilities;
+
 public class Appli {
 
 	public static void main(String[] args) {
 		
-		GPSPoint point1 = new GPSPoint(0,0);
-		GPSPoint point2 = new GPSPoint (0,15);
-		ArrayList<GPSPoint> trajet = new ArrayList<GPSPoint>();
-		trajet.add(point1);
-		trajet.add(point2);
-		Route laroute = new Route(trajet);
+		//TEST COURSES
+		Route laroute = new Route(new GPSPoint(700 ,400));
+		Route laroute2 = new Route(new GPSPoint(600 ,300));
+		Route laroute3 = new Route(new GPSPoint(650 ,150));
 		
 		//LISTE DES WORKERS
 		Biker jade = new Biker("Jade",55,7.1,Classe.BEGINNER);
-		Rider alfred = new Rider("Alfred",7.2);
+		Rider alfred = new Rider("Alfred",80,7.2);
 		Biker anna = new Biker("Anna",67,7.4,Classe.EXPERT);
-		Rider tiago = new Rider("Tiago",7.2);
+		Rider tiago = new Rider("Tiago",62,7.2);
 		Biker blaise = new Biker("Blaise",74,7.25,Classe.ATHLETIC);
 		ArrayList<Biker>  bikerList = new ArrayList<Biker>();
 		bikerList.add(jade);
@@ -43,17 +43,34 @@ public class Appli {
 		bikeList.add(cyclou);
 		bikeList.add(vavite);
 		
-		//CREATION D'UNE RIDELIST
-		RideList possibleRides = new RideList(new ArrayList<Ride>());
-		possibleRides.createBikerPossibleRides(8.5,bikerList,bikeList,laroute);
-		possibleRides.createRiderPossibleRides(8.5, riderList, scooterList, laroute);
-		RideList optimalRides = possibleRides.getOptimalRides();
-		System.out.println("COURSES POSSIBLES");
-		possibleRides.display();
-		System.out.println("COURSES OPTIMALES");
-		optimalRides.display();
-		
-		
-	}
+		 //CREATION D'UNE RIDELIST
+		RideList ridelist = new RideList();
+		ArrayList<Ride> activeRides = new ArrayList<Ride>();
+		System.out.println("COURSE SELECTIONNEE ");
+		try {
+		activeRides.add(ridelist.pickTheRide(8.5, riderList, scooterList, bikerList, bikeList, laroute));
+		activeRides.add(ridelist.pickTheRide(10, riderList, scooterList, bikerList, bikeList, laroute2));
+		activeRides.add(ridelist.pickTheRide(5, riderList, scooterList, bikerList, bikeList, laroute3));
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		Model model = new Model();
 
-}
+		try {
+			// creating the window (view)in EDT thread
+			SwingUtilities.invokeAndWait(new Runnable() {
+				public void run() {
+					View view = new View("GhostyDelivery", 1280, 720);
+					model.setView(view);
+					view.setVisible(true);
+				}
+			});
+		}
+		catch(Exception e) {
+			e.printStackTrace();
+		}
+		model.drawHome();
+		model.drawActiveRides(activeRides);
+	}
+	}
