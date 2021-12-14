@@ -12,7 +12,7 @@ public class Scooter extends Vehicle{
 		this.co2 = (this.cylinder)/4;
 	}
 	public double getSpeed() {
-		return (this.cylinder/50)+30;
+		return ((this.cylinder/50)+30)/3.6;
 	}
 	public double getUseCost() {
 		return this.usecost;

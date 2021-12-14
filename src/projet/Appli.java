@@ -4,15 +4,31 @@ import java.util.ArrayList;
 
 import javax.swing.SwingUtilities;
 
-public class Appli {
+public class Appli{
 
-	public static void main(String[] args) {
-		
+	public static void main(String[] args) throws Exception{
 		//TEST COURSES
-		Route laroute = new Route(new GPSPoint(700 ,400));
-		Route laroute2 = new Route(new GPSPoint(600 ,300));
-		Route laroute3 = new Route(new GPSPoint(650 ,150));
-		
+		ArrayList<GPSPoint> pointSeq = new ArrayList<GPSPoint>();
+		pointSeq.add(new GPSPoint(300,300));
+		pointSeq.add(new GPSPoint(400,400));
+		pointSeq.add(new GPSPoint(400,350,Type.DEST));
+		Route laroute = new Route(pointSeq);
+
+		ArrayList<GPSPoint> pointSeq2 = new ArrayList<GPSPoint>();
+		pointSeq2.add(new GPSPoint(300,300));
+		pointSeq2.add(new GPSPoint(150,150));
+		pointSeq2.add(new GPSPoint(150,300));
+		pointSeq2.add(new GPSPoint(200,300,Type.DEST));
+		Route laroute2 = new Route(pointSeq2);
+
+		ArrayList<GPSPoint> pointSeq3 = new ArrayList<GPSPoint>();
+		pointSeq3.add(new GPSPoint(300,300));
+		pointSeq3.add(new GPSPoint(375,425));
+		pointSeq3.add(new GPSPoint(550,400,Type.DEST));
+		Route laroute3 = new Route(pointSeq3);
+
+
+
 		//LISTE DES WORKERS
 		Biker jade = new Biker("Jade",55,7.1,Classe.BEGINNER);
 		Rider alfred = new Rider("Alfred",80,7.2);
@@ -26,7 +42,7 @@ public class Appli {
 		ArrayList<Rider>  riderList = new ArrayList<Rider>();
 		riderList.add(alfred);
 		riderList.add(tiago);
-		
+
 		//LISTE DES SCOOTERS
 		Scooter yamama = new Scooter("Yamama",3500,300,50,7.5);
 		Scooter vespo = new Scooter("Vespo",2500,125,30,5.5);
@@ -42,35 +58,48 @@ public class Appli {
 		Bike vavite = new Bike("Vavite",500);
 		bikeList.add(cyclou);
 		bikeList.add(vavite);
-		
-		 //CREATION D'UNE RIDELIST
+		//CREATION D'UNE RIDELIST
 		RideList ridelist = new RideList();
-		ArrayList<Ride> activeRides = new ArrayList<Ride>();
-		System.out.println("COURSE SELECTIONNEE ");
+		RideList activeRides = new RideList();
 		try {
-		activeRides.add(ridelist.pickTheRide(8.5, riderList, scooterList, bikerList, bikeList, laroute));
-		activeRides.add(ridelist.pickTheRide(10, riderList, scooterList, bikerList, bikeList, laroute2));
-		activeRides.add(ridelist.pickTheRide(5, riderList, scooterList, bikerList, bikeList, laroute3));
+			activeRides.addActive(ridelist.pickTheRide(8.5, riderList, scooterList, bikerList, bikeList, laroute));
+			//activeRides.addActive(ridelist.pickTheRide(8.5, riderList, scooterList, bikerList, bikeList, laroute2));
+			//activeRides.addActive(ridelist.pickTheRide(8.5, riderList, scooterList, bikerList, bikeList, laroute3));
 		}
 		catch(Exception e) {
 			e.printStackTrace();
 		}
 		Model model = new Model();
-
 		try {
 			// creating the window (view)in EDT thread
 			SwingUtilities.invokeAndWait(new Runnable() {
 				public void run() {
-					View view = new View("GhostyDelivery", 1280, 720);
+					System.out.println("Opening a view");
+					View view = new View("GhostyDelivery", 600, 600);
 					model.setView(view);
 					view.setVisible(true);
+					System.out.println("Drawing Map");
+					model.drawMap();
+					System.out.println("Drawing home");
+					model.drawHome();
+					System.out.println("Loading active rides");
+					model.drawActiveRides(activeRides);
+					System.out.println("Loading workers");
+					model.drawWorkers(activeRides);
+					System.out.println("Time passing...");
+				}});
+			while(activeRides.getAll().isEmpty() == false) {
+				try {
+					Thread.sleep(1000);
 				}
-			});
+				catch(Exception e){
+					e.printStackTrace();
+				}
+				//model.passTime(activeRides);
+			}
 		}
 		catch(Exception e) {
 			e.printStackTrace();
 		}
-		model.drawHome();
-		model.drawActiveRides(activeRides);
 	}
-	}
+}

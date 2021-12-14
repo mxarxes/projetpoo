@@ -1,51 +1,47 @@
 package projet;
-import java.util.ArrayList;
-import java.awt.Color;
-import javax.swing.SwingUtilities;
 
-/**
- * Un objet Model peut contenir des objets Drawable et les dessiner dans une vue graphique.
- */
 public class Model {
-	private View view;	// fenêtre graphique
-	
-	/**
-	 * Constructeur
-	 */
+	private View view;
+
 	public Model() {
 		view = null;
 	}
 
-	/**
-	 * Affectation de la vue
-	 *  @param view nouvelle vue liée à this
-	 */
+
 	public void setView(View view) {
 		this.view = view;
 	}
 
-	/**
-	 * Example d'insertion d'un objet graphique dans la vue et de mise
-	 * à jour de la vue via view.update()
-	 */
-	public void drawHome() {
-		Circle home = new Circle(640,360,10);
-		home.setColor(Color.RED);
-		home.setFill(true);
 
-		// ajout du cercle dans la vue et mise à jour de la vue
+	public void drawHome() {
+		GPSPoint home = new GPSPoint(300,300,Type.HOME);
 		view.addDrawable(home);
 		view.update();
 	}
-	public void drawActiveRides(ArrayList<Ride> activeRides) {
-		for(Ride r : activeRides) {
-			Circle pos = new Circle((int)r.getWorker().getPosition().getX(),(int)r.getWorker().getPosition().getY(),3);
-			pos.setColor(Color.BLACK);
-			pos.setFill(true);
-			
-			view.addDrawable(pos);
+	public void drawActiveRides(RideList activeRides) {
+		for(Ride r : activeRides.getAll()) {
+			GPSPoint dest = r.getRoute().get(r.getRoute().getSize()-1);
+			view.addDrawable(dest);
+			view.addDrawable(r.getRoute());
 			view.update();
 		}
+	}
+	public void drawWorkers(RideList activeRides) {
+		for(Ride r: activeRides.getAll()) {
+			view.addDrawable(r.getWorker());
+			view.update();
+		}
+	}
+	public void passTime(RideList activeRides) {
+		for(Ride r : activeRides.getAll()) {
+			r.step();
+		}
+		view.update();
+	}
+	public void drawMap() {
+		Background map = new Background();
+		view.addDrawable(map);
+		view.update();
 	}
 
 }

@@ -30,7 +30,7 @@ public class Ride{
 		this.speed = (worker.getSpeed() + vehicle.getSpeed());
 	}
 	public boolean isPossible() {
-		boolean lessThan1Hour = this.getDistance()/(this.speed)<1;
+		boolean lessThan1Hour = this.getDistance()/(this.speed)<60;
 		if(lessThan1Hour) {
 			if(this.payload >= this.weight) {
 				return true;
@@ -80,6 +80,9 @@ public class Ride{
 	public boolean getGreen() {
 		return this.isGreen;
 	}
+	public Route getRoute() {
+		return this.route;
+	}
 	public boolean isWorseThan(Ride ride2) {
 		return (this.co2 > ride2.getCo2() && this.price == ride2.getPrice()) || (this.co2 == ride2.getCo2() && this.price > ride2.getPrice()) || (this.co2 > ride2.getCo2() && this.price > ride2.getPrice());
 	}
@@ -90,10 +93,10 @@ public class Ride{
 		return this.getCo2()>r2.getCo2();
 	}
 	public void step() {
-		this.worker.goTowards(this.route.destination());
+		this.worker.goTowards(this.route,this.getSpeed());
 	}
 	public void stepHome() {
-		this.worker.goTowards(new GPSPoint(640,360));
+		this.worker.goTowards(this.route.reverse(),this.getSpeed());
 	}
 	public void display() {
 		System.out.println(this.getWorker().getName() + " sur " + this.getVehicle().getName());

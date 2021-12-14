@@ -9,8 +9,7 @@ import java.awt.Graphics;
 public class Circle implements Drawable {
 	private int x, y;		// coordonnées du centre
 	private int r;			// rayon
-	private Color col;		// couleur
-	private boolean plain;	// cercle plein (disque) ou pas
+	private Color col;
 	
 	/**
 	 * Constructeur
@@ -23,7 +22,6 @@ public class Circle implements Drawable {
 		this.y = y;
 		this.r = r;
 		this.col = Color.BLACK;
-		this.plain = false;
 	}
 	
 	/**
@@ -80,28 +78,22 @@ public class Circle implements Drawable {
 		this.col = col;
 	}
 
+		public void setRadius(int r) {
+			this.r = r;
+		}
 	/**
 	 * Modification du remplissage
 	 * @param b vrai si on remplit this, faux sinon
-	 */
-	public void setFill(boolean b) {
-		this.plain = b;
-	}
-	
+	 */	
 	/**
 	 * Méthode de dessin
 	 * @param g objet graphique dans lequel on dessine this
 	 */
 	public void draw(Graphics g) {
 		g.setColor(col);
-		
 		int x = this.getX() - this.getRadius(),
 			y = this.getY() - this.getRadius(),
 			d = 2 * this.getRadius();
-		
-		if (plain)
 			g.fillOval(x, y, d, d);
-		else
-			g.drawOval(x, y, d, d);
 	}
 }

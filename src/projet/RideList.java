@@ -12,11 +12,19 @@ public class RideList {
 	private ArrayList<Ride> rideList;
 
 
+	public ArrayList<Ride> getAll() {
+		return this.rideList;
+	}
 	public RideList() {
 		this.rideList = new ArrayList<Ride>();
 	}
 	public void add(Ride ride) {
 		this.rideList.add(ride);
+	}
+	public void addActive(Ride ride) {
+		this.rideList.add(ride);
+		System.out.println(ride.getWorker().getName() + " sur " + ride.getVehicle().getName() + " pour " + ride.getDistance() + " km ");
+		
 	}
 	public void createAllPossibleRides(double weight, ArrayList<Rider> riderList, ArrayList<Scooter> scooterList, ArrayList<Biker> bikerList, ArrayList<Bike> bikeList,Route laroute) {
 		this.rideList.clear();

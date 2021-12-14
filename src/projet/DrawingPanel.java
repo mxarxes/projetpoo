@@ -1,9 +1,10 @@
 package projet;
 import java.awt.Color;
 import java.awt.Graphics;
-
+import java.awt.Graphics2D;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
+import java.awt.BasicStroke;
 
 import java.util.*;
 
@@ -16,12 +17,9 @@ import java.util.*;
  *
  */
 public class DrawingPanel extends JPanel {
-	
-	private List<Drawable> drawList;	// liste des objets à dessiner
+	private static final long serialVersionUID = 1L; //Eclipse Quick Fix, hate warnings
+	private List<Drawable> drawList;
 
-	/**
-	 * Constructeur
-	 */
 	public DrawingPanel() {
 		super();
 		setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -29,46 +27,30 @@ public class DrawingPanel extends JPanel {
 		drawList = Collections.synchronizedList(new ArrayList<Drawable>());
 	}
 
-	/**
-	 * Ajoute un objet à dessiner dans this
-	 * @param obj objet ajouté dans la liste des objets
-	 */
 	public void addDrawable(Drawable obj) {
 		drawList.add(obj);
 	}
 	
-	/**
-	 * Retire un objet à dessiner de this
-	 * @param obj objet retiré de la liste des objets
-	 */
+
 	public void removeDrawable(Drawable obj) {
 		drawList.remove(obj);
 	}
 
-	/**
-	 * Vide la liste des objets à dessiner
-	 */
 	public void clearDrawable() {
 		drawList.clear();
 	}
 
-	/**
-	 * Mise à jour du panel
-	 * 
-	 * On doit appeler cette méthode quand on a modifié la liste des
-	 * objets à dessiner et qu'on veut redessiner
-	 * 
-	 * Appel automatique de paintComponent via repaint
-	 */
 	public void update() {
 		repaint();
 	}
 
-	/**
-	 * Méthode de dessin (qu'il ne faut pas appeler directement)
-	 */
 	public void paintComponent(Graphics g) {
-		synchronized(drawList) {
+
+	    synchronized(drawList) {
+
+		    super.paintComponent(g);
+		    Graphics2D g2 = (Graphics2D) g;
+		    g2.setStroke(new BasicStroke(2));
 			for (Drawable obj : drawList)
 				obj.draw(g);
 		}
