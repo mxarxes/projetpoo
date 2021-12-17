@@ -23,9 +23,7 @@ public class Biker extends Worker {
 
 	@Override
 	public void draw(Graphics g) {
-		int w = image.getWidth(null);
-		int h = image.getHeight(null);
-		g.drawImage(image,this.getPosition().getX(),this.getPosition().getY(),w,h,null);
+		g.drawImage(image,this.getPosition().getX()-12,this.getPosition().getY()-12,24,24,null);
 	}
 
 }

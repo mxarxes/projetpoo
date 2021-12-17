@@ -4,24 +4,21 @@ import java.lang.Math;
 import java.awt.Color;
 
 public class GPSPoint extends Circle implements Drawable {
-	private int x;
-	private int y;
 	private Type type;
 	private boolean isChecked;
 	
 	public GPSPoint(int x,int y){
 		super(x,y,3);
-		this.x = x;
-		this.y = y;
 		this.type = Type.MISC;
 		this.isChecked = false;
 	}
 	public GPSPoint(int x,int y, Type type){
 		super(x,y,3);
-		this.x = x;
-		this.y = y;
 		this.type = type;
 		this.isChecked = false;
+	}
+	public boolean isAnEnd() {
+		return (this.type == Type.DEST || (this.getX() == 300 && this.getY() == 300));
 	}
 	public void setPosition(int x, int y) {
 		this.x = x;
@@ -51,11 +48,22 @@ public class GPSPoint extends Circle implements Drawable {
 	public boolean isChecked() {
 		return this.isChecked;
 	}
-	public double dist(GPSPoint p) { //Returns the distance between this and p in km.
-		return (Math.sqrt(Math.pow((p.getX()-this.x),2)+Math.pow((p.getY()-this.y),2)));
-		//10px = 1km
+	/**
+	 * 
+	 * @param p : the other GPS point.
+	 * @return the distance in m between this and p.
+	 */
+	public double dist(GPSPoint p) {
+		double dX = p.getX() - this.x;
+		double dY = p.getY() - this.y;
+		return (Math.sqrt(Math.pow(dX,2)+Math.pow(dY,2)))*Model.ratio;
 	}
-
+	public void check() {
+		this.isChecked = true;
+	}
+	public void uncheck() {
+		this.isChecked = false;
+	}
 	public void draw(Graphics g) {
 		if(this.type == Type.HOME) {
 			g.setColor(Color.RED);
@@ -65,6 +73,9 @@ public class GPSPoint extends Circle implements Drawable {
 			g.setColor(Color.GREEN);
 		}
 		else if(this.type == Type.WORKER) {
+			g.setColor(Color.BLACK);
+		}
+		else if(this.type == Type.MISC) {
 			g.setColor(Color.BLACK);
 		}
 		int x = this.getX() - this.getRadius(),

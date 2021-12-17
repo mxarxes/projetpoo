@@ -7,9 +7,9 @@ import java.awt.Graphics;
  * Les coordonnées du centre et le rayon d'un cercle sont exprimés en nombre de pixels.
  */
 public class Circle implements Drawable {
-	private int x, y;		// coordonnées du centre
-	private int r;			// rayon
-	private Color col;
+	 int x, y;		// coordonnées du centre
+	 int r;			// rayon
+	 Color col;
 	
 	/**
 	 * Constructeur

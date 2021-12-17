@@ -12,7 +12,7 @@ public class Background implements Drawable{
 
 	public Background() {
 		try {
-			this.image = ImageIO.read(new FileInputStream("resource/images/map.png"));
+			this.image = ImageIO.read(new FileInputStream("resource/images/map1453.png"));
 		}
 		catch(Exception e) {
 			e.printStackTrace();

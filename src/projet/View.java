@@ -6,7 +6,7 @@ import javax.swing.*;
  * Cette classe représente une fenêtre graphique de type JFrame dans lequel
  * se trouve un panel pour dessiner de type JPanel.
  */
-public class View extends JFrame {
+public class View extends JFrame{
 	private static final long serialVersionUID = 1L; //Eclipse Quick Fix, hate warnings
 	private DrawingPanel panel;		// panel de dessin
 
@@ -24,7 +24,7 @@ public class View extends JFrame {
 		panel = new DrawingPanel();
 		getContentPane().add(panel);
 
-		setLocationRelativeTo(null);
+		setLocation(new Point(0,0));
 		setResizable(false);
 		pack();
 	}

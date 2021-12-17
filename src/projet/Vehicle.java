@@ -6,8 +6,10 @@ double price;
 double usecost;
 double payload;
 double co2;
+boolean isAvailable;
 GPSPoint position;
  public Vehicle(String name, int price) {
+	 this.isAvailable = true;
 	 this.position = new GPSPoint(640,360);
 	 this.name = name;
 	 this.price = price;
@@ -26,7 +28,13 @@ GPSPoint position;
 	 return this.co2;
  }
  public boolean isAvailable() {
-	 return this.position.getX() == 640 && this.position.getY() == 360;
+	return this.isAvailable;
+ }
+ public void setBusy() {
+	 this.isAvailable = false;
+ }
+ public void setAvailable() {
+	 this.isAvailable = true;
  }
  public abstract double getSpeed();
 }

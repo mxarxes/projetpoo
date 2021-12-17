@@ -1,6 +1,5 @@
 package projet;
 import java.awt.Image;
-
 public abstract class Worker implements Drawable{
 	String name;
 	double weight;
@@ -9,8 +8,10 @@ public abstract class Worker implements Drawable{
 	double payload;
 	Image image;
 	GPSPoint position = new GPSPoint(300,300,Type.WORKER);
+	boolean isAvailable;
 
 	public Worker(String name, double weight, double salary, Classe classe) {
+		this.isAvailable = true;
 		this.name = name;
 		this.weight = weight;
 		this.salary = salary;
@@ -27,10 +28,11 @@ public abstract class Worker implements Drawable{
 			this.speed = 20/3.6;
 		}
 		this.payload = (this.weight/8);
-		this.position.setX(640);
-		this.position.setY(360);
+		this.position.setX(300);
+		this.position.setY(300);
 	}
 	public Worker(String name, double weight, double salary) {
+		this.isAvailable = true;
 		this.name = name;
 		this.weight = weight;
 		this.salary = salary;
@@ -49,46 +51,71 @@ public abstract class Worker implements Drawable{
 		return this.position;
 	}
 	public boolean isAvailable() {
-		return this.position.getX() == 300 && this.position.getY() == 300;
+		return this.isAvailable;
 	}
-	public void goTowards(Route route, double speed) {
-		double newX,newY;
-		boolean lastStep = false;
+	public void setBusy() {
+		this.isAvailable = false;
+	}
+	public void setAvailable() {
+		this.isAvailable = true;
+	}
+	public boolean isHome() {
+		return this.getPosition().getX() == 300 && this.getPosition().getY() == 300;
+	}
+	/**
+	 * 
+	 * @param route
+	 * @return the next point the worker has to go to.
+	 */
+	public GPSPoint getNextPoint(Route route){
 		GPSPoint nextStep = new GPSPoint(0,0);
-		GPSPoint stepAfter = new GPSPoint(0,0);
-		for(int i = route.getRoute().size()-1; i > 0; i--) {
-			if(route.getRoute().get(i).isChecked() == false) {
-				nextStep = route.getRoute().get(i).clone();
-				if(i == route.getRoute().size()) {
-					lastStep = true;
-				}
-				else {
-					stepAfter = route.getRoute().get(i+1).clone();
-				}
+		for(int i=route.getSize()-1; i > 0 ; i--) {
+			if(route.get(i).isChecked() == false) {
+				nextStep = route.get(i);
 			}
 		}
+		return nextStep;
+	}
+	public void goToPoint(GPSPoint p) {
+		this.getPosition().setPosition(p.getX(), p.getY());
+		p.check();
+	}
+	/**
+	 * 
+	 * @param route : the route in which the worker must advance.
+	 * @param mobility : the distance in meters this worker must go through.
+	 */
+	public void advance(Route route, double mobility) {
+	GPSPoint nextStep = getNextPoint(route);
+		double distanceFromNext = this.getPosition().dist(nextStep); // H in meters
+		if(mobility <= distanceFromNext ){ //The worker will go towards the next point.
 
-		double absoluteDist = (speed*(3.6));
-		if(this.getPosition().dist(nextStep) > absoluteDist){
-			 newX = this.position.getX() + ((absoluteDist*nextStep.getX())/this.getPosition().dist(nextStep));
-			 newY = this.position.getY() + ((absoluteDist*nextStep.getY())/this.getPosition().dist(nextStep));
-			this.position.setPosition((int)newX,(int)newY);
+			double dX = (nextStep.getX() - this.getPosition().getX())*Model.ratio; // A 
+			double dY = (nextStep.getY() - this.getPosition().getY())*Model.ratio; // O
+			//Composants of distanceFromNext, projected on x and on y.
+
+			double stepX = (mobility*dX)/distanceFromNext; // a
+			double stepY = (mobility*dY)/distanceFromNext; // o
+			//Composants of the next "step" of the worker, projected on x and y.
+			//Using Thales' Theorem.
+			this.getPosition().setX((int)(this.getPosition().getX()+stepX/Model.ratio));
+			this.getPosition().setY((int)(this.getPosition().getY()+stepY/Model.ratio));
 		}
-		else if(this.getPosition().dist(nextStep) == absoluteDist || (this.getPosition().dist(nextStep) < absoluteDist && lastStep)){
-			 newX = nextStep.getX();
-			 newY = nextStep.getY();
+		else if((mobility > distanceFromNext && nextStep.isAnEnd() )|| mobility == distanceFromNext ){
+			//if the end of the ride is less than one step away or exactly one step away,
+			//the worker will stop at the next step. (=> the end of the ride.);
+			this.goToPoint(nextStep);
 		}
-		else {
-			absoluteDist -= this.getPosition().dist(nextStep);
-			 newX = nextStep.getX() + ((absoluteDist*stepAfter.getX())/nextStep.dist(stepAfter));
-			 newY = nextStep.getY() + ((absoluteDist*stepAfter.getY())/nextStep.dist(stepAfter));
+		else if(mobility > distanceFromNext) {
+			//if the worker can go farther than the next point,
+			//it first goes to the next point, then uses what is left
+			//of its mobility to go as far as possible towards the point after.
+			double remainingMobility = mobility - this.getPosition().dist(nextStep); // remaining mobility after reaching next point
+			this.goToPoint(nextStep);
+			//nextStep = this.getNextPoint(route);
+			this.advance(route, remainingMobility);
 		}
-		this.position.setPosition((int)newX, (int)newY);
-		/*System.out.println("Worker speed : " + speed + " m/s");
-		System.out.println("Moving by " + absoluteDist + " meters");
-		System.out.println("Worker " + this.getName() + " moved towards " + nextStep.getX() +" , " + nextStep.getY());
-		System.out.println("New position : " +this.getPosition().getX() + " , " + this.getPosition().getY());
-	*/
+
 	}
 
 	public abstract double getSpeed();

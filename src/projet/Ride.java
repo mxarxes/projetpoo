@@ -11,8 +11,12 @@ public class Ride{
 	private double speed;
 	private boolean isOptimal; //is less expensive and less polluting, less expensive and as polluting as, or as expensive and less polluting than any other ride in a set rideList.
 	private boolean isGreen; //is less polluting than any other in a rideList.
+	private boolean isDelivered;
+	private boolean isActive;
 
 	public Ride(double weight, Worker worker, Vehicle vehicle, Route route) {
+		this.isActive = false;
+		this.isDelivered = false;
 		this.isOptimal = true;
 		this.isGreen = true;
 		this.weight = weight;
@@ -30,7 +34,7 @@ public class Ride{
 		this.speed = (worker.getSpeed() + vehicle.getSpeed());
 	}
 	public boolean isPossible() {
-		boolean lessThan1Hour = this.getDistance()/(this.speed)<60;
+		boolean lessThan1Hour = this.getDistance()/(this.speed)<1800; //1800s = 1h
 		if(lessThan1Hour) {
 			if(this.payload >= this.weight) {
 				return true;
@@ -40,10 +44,13 @@ public class Ride{
 			}
 		}
 		else {
-
 			return false;
 		}
 	}
+	/**
+	 * 
+	 * @return the speed of this worker on this vehicle, in m/s.
+	 */
 	public double getSpeed() {
 		return this.speed;
 	}
@@ -68,6 +75,12 @@ public class Ride{
 	public double getPrice() {
 		return this.price;
 	}
+	public void deliver() {
+		this.isDelivered = true;
+		for(GPSPoint p : this.getRoute().getRoute()) {
+			p.uncheck();
+		}
+	}
 	public void setOptimal(boolean o) {
 		this.isOptimal = o;
 	}
@@ -83,6 +96,26 @@ public class Ride{
 	public Route getRoute() {
 		return this.route;
 	}
+	public boolean isDelivered() {
+		return this.isDelivered;
+	}
+	public boolean isActive() {
+		return this.isActive;
+	}
+	public void setActive() {
+		this.isActive = true;
+	}
+	public void setInactive() {
+		this.isActive = false;
+	}
+	public int getIndex(RideList list) {
+		for(int i=0; i<list.getAll().size();i++) {
+			if(this.getVehicle() == list.getAll().get(i).getVehicle() && this.getWorker() == list.getAll().get(i).getWorker()) {
+				return i;
+			}
+		}
+		return 0;
+	}
 	public boolean isWorseThan(Ride ride2) {
 		return (this.co2 > ride2.getCo2() && this.price == ride2.getPrice()) || (this.co2 == ride2.getCo2() && this.price > ride2.getPrice()) || (this.co2 > ride2.getCo2() && this.price > ride2.getPrice());
 	}
@@ -93,10 +126,12 @@ public class Ride{
 		return this.getCo2()>r2.getCo2();
 	}
 	public void step() {
-		this.worker.goTowards(this.route,this.getSpeed());
-	}
-	public void stepHome() {
-		this.worker.goTowards(this.route.reverse(),this.getSpeed());
+		if(this.isDelivered) {
+			this.worker.advance(this.route.reverse(), this.getSpeed()*60);
+		}
+		else {
+		this.worker.advance(this.route,this.getSpeed()*60);
+		}
 	}
 	public void display() {
 		System.out.println(this.getWorker().getName() + " sur " + this.getVehicle().getName());

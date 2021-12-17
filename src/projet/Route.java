@@ -29,7 +29,7 @@ public class Route implements Drawable {
 
 
 	/**
-	 * @return la distance totale d'un trajet en km
+	 * @return Total distance of a ride in meters.
 	 */
 	public double totalDistance() {
 		double d = 0;
@@ -52,7 +52,11 @@ public class Route implements Drawable {
 	}
 
 	public Route reverse(){
-		return this; //TODO implement this function
+		ArrayList<GPSPoint> reverseRoute = new ArrayList<GPSPoint>();
+		for(int i = this.getRoute().size()-1;i>=0;i--) {
+			reverseRoute.add(this.get(i));
+		}
+		return new Route(reverseRoute);
 	}
 	@Override
 	public void draw(Graphics g) {

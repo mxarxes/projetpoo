@@ -3,38 +3,52 @@ import java.util.*;
 
 
 /*
- * 
- * This class is intended to manipulate lists of rides.
- * 
- * 
+ * This class is intended to manipulate lists of rides. 
  */
 public class RideList {
 	private ArrayList<Ride> rideList;
 
-
-	public ArrayList<Ride> getAll() {
-		return this.rideList;
-	}
 	public RideList() {
 		this.rideList = new ArrayList<Ride>();
 	}
-	public void add(Ride ride) {
+	public ArrayList<Ride> getAll() {
+		return this.rideList;
+	}
+	public void add(Ride ride) { // Do not use directly ! Use addActive() instead.
 		this.rideList.add(ride);
 	}
 	public void addActive(Ride ride) {
 		this.rideList.add(ride);
-		System.out.println(ride.getWorker().getName() + " sur " + ride.getVehicle().getName() + " pour " + ride.getDistance() + " km ");
-		
+		System.out.println(ride.getWorker().getName() + " sur " + ride.getVehicle().getName() + " pour " + (double)Math.round(ride.getDistance()/100)/10 + " km ");
+		ride.getWorker().setBusy();
+		ride.getVehicle().setBusy();
+		ride.setActive();
 	}
-	public void createAllPossibleRides(double weight, ArrayList<Rider> riderList, ArrayList<Scooter> scooterList, ArrayList<Biker> bikerList, ArrayList<Bike> bikeList,Route laroute) {
+	public void removeFromActive(Ride ride) {
+		this.rideList.remove(ride.getIndex(this));
+		ride.getWorker().setAvailable();
+		ride.getVehicle().setAvailable();
+	}
+	/**
+	 * makes this.ridelist a list of all possible rides using the workers and vehicles listed in the parameters.
+	 * @param weight the weight of the meal to deliver.
+	 * @param riderList a list of scooter riders
+	 * @param scooterList a list of scooters
+	 * @param bikerList a list of bikers
+	 * @param bikeList a list of bikes
+	 * @param route the Route (sequence of GPSPoints)
+	 */
+	public void createAllPossibleRides(double weight, ArrayList<Rider> riderList, ArrayList<Scooter> scooterList, ArrayList<Biker> bikerList, ArrayList<Bike> bikeList,Route route) {
 		this.rideList.clear();
+		
 		//CREATING ALL POSSIBLE BIKE RIDES :  
 		for(Biker b : bikerList) {
 			for(Bike bb : bikeList) {
 				if(b.isAvailable() && bb.isAvailable()) {
-					Ride course = new Ride(weight, b, bb, laroute );
+					Ride course = new Ride(weight, b, bb, route );
 					if(course.isPossible()) {
 						this.add(course);
+		
 					}
 				}
 			}
@@ -43,7 +57,7 @@ public class RideList {
 		for(Rider r : riderList) {
 			for(Scooter s : scooterList) {
 				if(r.isAvailable() && s.isAvailable()) {
-					Ride course = new Ride(weight, r, s, laroute );
+					Ride course = new Ride(weight, r, s, route );
 					if(course.isPossible()) {
 						this.add(course);
 					}
@@ -51,6 +65,10 @@ public class RideList {
 			}
 		}
 	}
+	/**
+	 * Removes all Rides that are not optimal from this.ridelist.
+	 * A ride is optimal if it is not worse that any other in the list.
+	 */
 	public void removeNonOptimalRides() {
 		ArrayList<Ride> optimalRides = new ArrayList<Ride>();
 		for(Ride ride : this.rideList) {
@@ -69,6 +87,9 @@ public class RideList {
 		}
 		this.rideList = optimalRides;
 	}
+	/**
+	 * @warning : use only 
+	 */
 	public void saveThePlanet() {
 		ArrayList<Ride> greenRides = new ArrayList<Ride>();
 		for(Ride r : this.rideList) {
@@ -89,7 +110,7 @@ public class RideList {
 
 	}
 	public Ride pickTheRide(double weight,ArrayList<Rider> riderList, ArrayList<Scooter> scooterList, ArrayList<Biker> bikerList, ArrayList<Bike> bikeList,Route laroute ) throws Exception {
-		this.createAllPossibleRides(0, riderList, scooterList, bikerList, bikeList, laroute);
+		this.createAllPossibleRides(weight, riderList, scooterList, bikerList, bikeList, laroute);
 		if(this.rideList.size() > 0) {
 			this.removeNonOptimalRides();
 			this.saveThePlanet();
